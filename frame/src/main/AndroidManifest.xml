@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="cn.leo.frame">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <application>
+        <meta-data
+            android:name="net.ship56.service.glide.OkHttpGlideModule"
+            android:value="GlideModule"/>
+    </application>
+</manifest>
