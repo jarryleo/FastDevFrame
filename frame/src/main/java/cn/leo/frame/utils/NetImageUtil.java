@@ -1,5 +1,6 @@
 package cn.leo.frame.utils;
 
+import android.support.annotation.IdRes;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -32,7 +33,7 @@ public class NetImageUtil {
      * @param errResId
      */
 
-    public static void setImageWithDefault(String url, ImageView imageView, int defResId, int errResId) {
+    public static void setImageWithDefault(String url, ImageView imageView, @IdRes int defResId, @IdRes int errResId) {
         Glide.with(imageView.getContext())
                 .load(url)
                 .centerCrop()

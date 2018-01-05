@@ -17,7 +17,7 @@ import rx.Observable;
 
 public interface PresenterAPI {
     @GET(NetConfig.BASE_URL)
-    Observable<WaybillBean> requestNewsPicData(@Query("param") int param);
+    Observable<TestBean> requestNewsPicData(@Query("param") int param);
 
     @FormUrlEncoded
     @POST(NetConfig.BASE_URL)

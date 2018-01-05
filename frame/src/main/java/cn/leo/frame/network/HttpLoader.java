@@ -1,5 +1,10 @@
 package cn.leo.frame.network;
 
+import android.support.annotation.Nullable;
+
+import com.trello.rxlifecycle.ActivityLifecycleProvider;
+import com.trello.rxlifecycle.FragmentLifecycleProvider;
+
 import cn.leo.frame.utils.NetworkUtil;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -70,13 +75,13 @@ public class HttpLoader {
         return mRetrofit.create(service);
     }
 
-
     /**
      * 集体执行逻辑(如果不想这样用，可以直接用API拿Observable自己写rxjava执行逻辑)
      *
      * @param resultListener 结果监听
      */
-    public <T> Subscription executor(final Observable<T> observable,
+    public <T> Subscription executor(@Nullable Object view,
+                                     final Observable<T> observable,
                                      final ResultListener<T> resultListener) {
         if (observable == null) {
             return null;
@@ -88,9 +93,20 @@ public class HttpLoader {
                 return null;
             }
         }
-        Subscription subscribe = observable
+        Observable<T> tObservable = observable
                 .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())//在io线程取消订阅
+                .unsubscribeOn(Schedulers.io());
+        //判断是否可以绑定生命周期
+        if (view instanceof ActivityLifecycleProvider) {
+            ActivityLifecycleProvider lifecycleProvider = (ActivityLifecycleProvider) view;
+            tObservable.compose(lifecycleProvider.<T>bindToLifecycle());
+        }
+        if (view instanceof FragmentLifecycleProvider) {
+            FragmentLifecycleProvider lifecycleProvider = (FragmentLifecycleProvider) view;
+            tObservable.compose(lifecycleProvider.<T>bindToLifecycle());
+        }
+        //执行请求
+        Subscription subscribe = tObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new ResultListener<T>() {
                     @Override
@@ -101,9 +117,9 @@ public class HttpLoader {
                     }
 
                     @Override
-                    public void onFailed(String errorMsg) {
+                    public void onFailed(String msg) {
                         if (resultListener != null) {
-                            resultListener.onFailed(errorMsg);
+                            resultListener.onFailed(msg);
                         }
                     }
                 });

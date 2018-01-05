@@ -15,7 +15,8 @@ public abstract class ResultListener<T> implements Observer<T> {
 
     @Override
     public void onError(Throwable e) {
-        onFailed(e.getMessage());
+        e.printStackTrace();
+        onError();
     }
 
     @Override
@@ -25,5 +26,8 @@ public abstract class ResultListener<T> implements Observer<T> {
 
     public abstract void onSuccess(T result);
 
-    public abstract void onFailed(String errorMsg);
+    public abstract void onFailed(String msg);
+
+    public void onError() {
+    }
 }
