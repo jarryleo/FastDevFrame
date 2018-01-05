@@ -11,7 +11,11 @@ import rx.Observable;
 
 public interface PresenterAPI {
     @GET(NetConfig.NEWS_LIST)
-    Observable<TestBean> getNewsList(@Query("page") int page, @Query("pageSize") int pageSize);
+    Observable<TestBean> getNewsList(@Query("access_token") String access_token,
+                                     @Query("catalog") int catalog,
+                                     @Query("dataType") String dataType,
+                                     @Query("page") int page,
+                                     @Query("pageSize") int pageSize);
 
    /* @GET(NetConfig.BASE_URL)
     Observable<TestBean> requestNewsPicData(@Query("param") int param);

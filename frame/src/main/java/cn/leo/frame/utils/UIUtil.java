@@ -1,7 +1,12 @@
 package cn.leo.frame.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 /*
@@ -56,6 +61,27 @@ public class UIUtil extends BaseUtil {
         if (imm.isActive()) {
             imm.hideSoftInputFromWindow(v.getApplicationWindowToken(), 0);
 
+        }
+    }
+
+    /**
+     * 透明状态栏
+     *
+     * @param activity
+     */
+    public static void translucentStatusBar(Activity activity) {
+        Window win = activity.getWindow();
+        //KITKAT也能满足，只是SYSTEM_UI_FLAG_LIGHT_STATUS_BAR（状态栏字体颜色反转）只有在6.0才有效
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            win.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);//透明状态栏
+            // 状态栏字体设置为深色，SYSTEM_UI_FLAG_LIGHT_STATUS_BAR 为SDK23增加
+            win.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            //win.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN); //不调节状态栏文字颜色
+            // 部分机型的statusbar会有半透明的黑色背景
+            win.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            win.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            win.setStatusBarColor(Color.TRANSPARENT);// SDK21
         }
     }
 }

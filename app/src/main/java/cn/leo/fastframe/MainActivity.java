@@ -5,17 +5,21 @@ import android.support.v7.app.AppCompatActivity;
 
 import cn.leo.fastframe.test.TestBean;
 import cn.leo.fastframe.test.TestPresenter;
+import cn.leo.frame.utils.UIUtil;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TestPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TestPresenter presenter = new TestPresenter(this);
+        mPresenter = new TestPresenter(this);
+        UIUtil.translucentStatusBar(this);
     }
 
-    public void onGetNewsListSuccess(TestBean bean){
+    public void onGetNewsListSuccess(TestBean bean) {
 
     }
 }
