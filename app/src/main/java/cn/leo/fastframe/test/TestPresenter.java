@@ -2,6 +2,7 @@ package cn.leo.fastframe.test;
 
 import android.arch.lifecycle.LifecycleOwner;
 
+import cn.leo.fastframe.base.BasePresenter;
 import cn.leo.frame.network.ResultListener;
 
 /**
@@ -11,6 +12,12 @@ import cn.leo.frame.network.ResultListener;
 public class TestPresenter extends BasePresenter {
     public TestPresenter(LifecycleOwner view) {
         super(view);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        testHttp();
     }
 
     public void testHttp() {

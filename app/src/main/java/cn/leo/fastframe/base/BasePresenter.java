@@ -1,7 +1,9 @@
-package cn.leo.fastframe.test;
+package cn.leo.fastframe.base;
 
 import android.arch.lifecycle.LifecycleOwner;
 
+import cn.leo.fastframe.net.NetConfig;
+import cn.leo.fastframe.net.PresenterAPI;
 import cn.leo.frame.base.SuperBasePresenter;
 
 /**

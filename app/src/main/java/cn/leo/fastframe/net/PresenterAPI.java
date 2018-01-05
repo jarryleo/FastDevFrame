@@ -1,7 +1,8 @@
-package cn.leo.fastframe.test;
+package cn.leo.fastframe.net;
 
 import java.util.HashMap;
 
+import cn.leo.fastframe.test.TestBean;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FieldMap;

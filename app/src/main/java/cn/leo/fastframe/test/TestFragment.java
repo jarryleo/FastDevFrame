@@ -12,7 +12,5 @@ public class TestFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TestPresenter testPresenter = new TestPresenter(this);
-        testPresenter.testHttp();
     }
 }

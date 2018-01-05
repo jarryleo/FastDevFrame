@@ -20,6 +20,7 @@ public abstract class SuperBasePresenter<T> implements LifecycleObserver {
     private HttpLoader mHttpLoader;
 
     public LifecycleOwner mView;
+    //生命周期管理
     private CompositeSubscription mCompositeSubscription;
 
     {
@@ -40,7 +41,7 @@ public abstract class SuperBasePresenter<T> implements LifecycleObserver {
 
     public <O> Subscription executor(final Observable<O> observable,
                                      final ResultListener<O> resultListener) {
-        Subscription executor = mHttpLoader.executor(mView, observable, resultListener);
+        Subscription executor = mHttpLoader.executor(observable, resultListener);
         mCompositeSubscription.add(executor);
         return executor;
     }
@@ -50,7 +51,17 @@ public abstract class SuperBasePresenter<T> implements LifecycleObserver {
         unSubscribe();
     }
 
-    protected void unSubscribe() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onStart() {
+        //子类可继承此方法进行请求数据
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
+    public void onAny(LifecycleOwner owner, Lifecycle.Event event) {
+        //子类继承此方法可以拿到详细的生命周期
+    }
+
+    public void unSubscribe() {
         mCompositeSubscription.clear();
     }
 }
