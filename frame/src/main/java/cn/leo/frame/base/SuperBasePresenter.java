@@ -16,9 +16,11 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public abstract class SuperBasePresenter<T, Y extends LifecycleOwner> implements LifecycleObserver {
-    //泛型为网络请求API接口类
+    //泛型T为网络请求API接口类,在BasePresenter实现
     public T mAPI;
     private HttpLoader mHttpLoader;
+    //泛型Y为具体的Activity或者Fragment,留给具体的presenter实现
+    //写法：BasePresenter<T extends LifecycleOwner> extends SuperBasePresenter<PresenterAPI, T>
     public Y mView;
 
     //生命周期管理
