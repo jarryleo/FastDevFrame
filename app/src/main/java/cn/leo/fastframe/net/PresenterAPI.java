@@ -1,14 +1,7 @@
 package cn.leo.fastframe.net;
 
-import java.util.HashMap;
-
 import cn.leo.fastframe.test.TestBean;
-import okhttp3.ResponseBody;
-import retrofit2.http.Field;
-import retrofit2.http.FieldMap;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -17,7 +10,10 @@ import rx.Observable;
  */
 
 public interface PresenterAPI {
-    @GET(NetConfig.BASE_URL)
+    @GET(NetConfig.NEWS_LIST)
+    Observable<TestBean> getNewsList(@Query("page") int page, @Query("pageSize") int pageSize);
+
+   /* @GET(NetConfig.BASE_URL)
     Observable<TestBean> requestNewsPicData(@Query("param") int param);
 
     @FormUrlEncoded
@@ -26,5 +22,5 @@ public interface PresenterAPI {
 
     @FormUrlEncoded
     @POST(NetConfig.BASE_URL)
-    Observable<ResponseBody> Test2(@FieldMap HashMap<String, String> params);
+    Observable<ResponseBody> Test2(@FieldMap HashMap<String, String> params);*/
 }

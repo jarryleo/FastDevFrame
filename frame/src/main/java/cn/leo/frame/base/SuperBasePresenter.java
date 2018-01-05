@@ -15,25 +15,35 @@ import rx.subscriptions.CompositeSubscription;
  * Created by Leo on 2018/1/4.
  */
 
-public abstract class SuperBasePresenter<T> implements LifecycleObserver {
+public abstract class SuperBasePresenter<T, Y extends LifecycleOwner> implements LifecycleObserver {
+    //泛型为网络请求API接口类
     public T mAPI;
     private HttpLoader mHttpLoader;
+    public Y mView;
 
-    public LifecycleOwner mView;
     //生命周期管理
     private CompositeSubscription mCompositeSubscription;
 
     {
-        mHttpLoader = new HttpLoader.Builder(getBaseUrl()).build();
+        mHttpLoader = getHttpLoader();
         mAPI = mHttpLoader.create(getAPIClass());
+    }
+
+    /**
+     * 如果要自定义拦截器等等,重写这个方法
+     * 可以用 {@link cn.leo.frame.network.OkHttp3Builder} 构建自定义的 OkHttpClient
+     *
+     * @return
+     */
+    private HttpLoader getHttpLoader() {
+        return new HttpLoader.Builder(getBaseUrl()).build();
     }
 
     public abstract String getBaseUrl();
 
     public abstract Class<T> getAPIClass();
 
-
-    public SuperBasePresenter(LifecycleOwner view) {
+    public SuperBasePresenter(Y view) {
         mView = view;
         mView.getLifecycle().addObserver(this);
         mCompositeSubscription = new CompositeSubscription();
@@ -46,9 +56,13 @@ public abstract class SuperBasePresenter<T> implements LifecycleObserver {
         return executor;
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
-        unSubscribe();
+    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
+    public void onAny(LifecycleOwner owner, Lifecycle.Event event) {
+        //子类继承此方法可以拿到详细的生命周期
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    public void onCreate() {
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -56,9 +70,21 @@ public abstract class SuperBasePresenter<T> implements LifecycleObserver {
         //子类可继承此方法进行请求数据
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
-    public void onAny(LifecycleOwner owner, Lifecycle.Event event) {
-        //子类继承此方法可以拿到详细的生命周期
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onResume() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onPause() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onStop() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    public void onDestroy() {
+        unSubscribe();
     }
 
     public void unSubscribe() {

@@ -46,7 +46,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
 
     //RxJava生命周期
-    compile 'com.trello:rxlifecycle-components:0.6.1'
+    //compile 'com.trello:rxlifecycle-components:0.6.1'
 
     //Retrofit2
     compile 'com.squareup.retrofit2:retrofit:2.2.0'

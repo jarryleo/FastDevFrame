@@ -1,6 +1,7 @@
 package cn.leo.frame.network;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ public class OkHttp3Builder {
     private int CONNECT_TIMEOUT = 30;
     private int cacheSize = 10 * 1024 * 1024;
     private File cacheDir = FileUtil.getCacheDir();
-    private List<Interceptor> mInterceptorList;
+    private List<Interceptor> mInterceptorList = new ArrayList<>();
 
     public OkHttp3Builder connectTimeout(int timeout) {
         CONNECT_TIMEOUT = timeout;

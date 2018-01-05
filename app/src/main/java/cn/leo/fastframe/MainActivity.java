@@ -3,10 +3,10 @@ package cn.leo.fastframe;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import cn.leo.fastframe.test.TestBean;
 import cn.leo.fastframe.test.TestPresenter;
-import cn.leo.frame.base.SuperBaseActivity;
 
-public class MainActivity extends SuperBaseActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,4 +15,7 @@ public class MainActivity extends SuperBaseActivity {
         TestPresenter presenter = new TestPresenter(this);
     }
 
+    public void onGetNewsListSuccess(TestBean bean){
+
+    }
 }
