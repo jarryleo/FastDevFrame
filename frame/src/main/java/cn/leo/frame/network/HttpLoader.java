@@ -41,7 +41,8 @@ public class HttpLoader {
          * @return
          */
         public Builder client(OkHttpClient client) {
-            mHttpClient = client;
+            if (client != null)
+                mHttpClient = client;
             return this;
         }
 

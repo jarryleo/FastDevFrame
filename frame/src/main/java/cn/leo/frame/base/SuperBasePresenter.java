@@ -4,6 +4,8 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.os.Looper;
+import android.os.MessageQueue;
 
 import cn.leo.frame.network.HttpLoader;
 import cn.leo.frame.network.ResultListener;
@@ -58,6 +60,12 @@ public abstract class SuperBasePresenter<T, Y extends LifecycleOwner> implements
         return executor;
     }
 
+    /**
+     * 空闲时候加载的方法，可以用来初始化或者请求数据
+     */
+    protected void lazyInitOnce() {
+    }
+
     @OnLifecycleEvent(Lifecycle.Event.ON_ANY)
     public void onAny(LifecycleOwner owner, Lifecycle.Event event) {
         //子类继承此方法可以拿到详细的生命周期
@@ -65,6 +73,13 @@ public abstract class SuperBasePresenter<T, Y extends LifecycleOwner> implements
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     public void onCreate() {
+        Looper.myQueue().addIdleHandler(new MessageQueue.IdleHandler() {
+            @Override
+            public boolean queueIdle() {
+                lazyInitOnce();
+                return false;
+            }
+        });
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)

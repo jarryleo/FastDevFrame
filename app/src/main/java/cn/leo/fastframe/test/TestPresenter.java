@@ -16,10 +16,9 @@ public class TestPresenter extends BasePresenter<MainActivity> {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    protected void lazyInitOnce() {
         testHttp();
-        ToastUtil.shortToast("请求网络");
+        ToastUtil.shortToast("空闲加载数据");
     }
 
     public void testHttp() {
