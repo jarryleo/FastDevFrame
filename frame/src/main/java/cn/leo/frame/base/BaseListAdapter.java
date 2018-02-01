@@ -40,6 +40,16 @@ public abstract class BaseListAdapter<T> extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void removeData(T item) {
+        mList.remove(item);
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        mList.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         BaseHolder holder;
@@ -50,11 +60,11 @@ public abstract class BaseListAdapter<T> extends BaseAdapter {
             holder = (BaseHolder) convertView.getTag();
         }
         T data = mList.get(position);
-        holder.bindView(data);
+        holder.bindView(data, position);
         return holder.getView();
     }
 
 
     //由子类选择ViewHolder
-    protected abstract BaseHolder getViewHolder(int data);
+    protected abstract BaseHolder getViewHolder(int position);
 }

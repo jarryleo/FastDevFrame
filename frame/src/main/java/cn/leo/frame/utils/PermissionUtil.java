@@ -115,7 +115,7 @@ public class PermissionUtil {
      * @param grantResults
      * @return
      */
-    public static boolean executePermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public static boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE:
                 for (int i = 0; i < permissions.length; i++) {

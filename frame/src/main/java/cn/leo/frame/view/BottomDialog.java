@@ -31,7 +31,7 @@ public abstract class BottomDialog extends Dialog {
         win.getDecorView()
                 .setPadding(0, 0, 0, 0);
         WindowManager.LayoutParams lp = win.getAttributes();
-        lp.width = WindowManager.LayoutParams.FILL_PARENT;
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         win.setAttributes(lp);
         show();

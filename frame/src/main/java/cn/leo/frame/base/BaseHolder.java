@@ -8,20 +8,18 @@ import butterknife.ButterKnife;
 public abstract class BaseHolder<T> {
 
     protected Context mContext;
-    protected int mPosition;
     protected View mView;
 
     public void inflateView(Context context, int position) {
         mContext = context;
-        mPosition = position;
-        mView = onCreateView(context);
+        mView = onCreateView(context, position);
         ButterKnife.bind(this, mView);
         mView.setTag(this);
     }
 
-    protected abstract View onCreateView(Context context);
+    protected abstract View onCreateView(Context context, int position);
 
-    public abstract void bindView(T data);
+    public abstract void bindView(T data, int position);
 
     public View getView() {
         return mView;
