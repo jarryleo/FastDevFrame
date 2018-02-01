@@ -97,4 +97,26 @@ public abstract class BaseFragment extends Fragment {
     public void onHide(boolean onPause) {
 
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("first", firstVisible);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            firstVisible = savedInstanceState.getBoolean("first", firstVisible);
+        }
+        super.onViewStateRestored(savedInstanceState);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            firstVisible = savedInstanceState.getBoolean("first", firstVisible);
+        }
+        super.onCreate(savedInstanceState);
+    }
 }

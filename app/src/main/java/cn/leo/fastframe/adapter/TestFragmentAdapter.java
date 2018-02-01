@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import cn.leo.fastframe.test.TestFragment;
+import cn.leo.frame.base.BaseFragment;
 import cn.leo.frame.base.BaseFragmentVPAdapter;
 
 /**
@@ -17,16 +18,19 @@ public class TestFragmentAdapter extends BaseFragmentVPAdapter {
     }
 
     @Override
-    public Fragment getItem(int position) {
-        TestFragment testFragment = new TestFragment();
-        Bundle data = new Bundle();
-        data.putString("title", "第" + position + "个");
-        testFragment.setArguments(data);
-        return testFragment;
+    public Fragment createFragment(int position) {
+        return new TestFragment();
     }
 
     @Override
-    public int getCount() {
-        return 3;
+    protected void initFragment(BaseFragment fragment, int position) {
+        Bundle data = new Bundle();
+        data.putString("title", "第" + position + "个");
+        fragment.setArguments(data);
+    }
+
+    @Override
+    protected int getFragmentCount() {
+        return 5;
     }
 }
