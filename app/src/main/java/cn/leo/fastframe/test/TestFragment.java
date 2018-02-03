@@ -1,5 +1,6 @@
 package cn.leo.fastframe.test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -45,5 +46,10 @@ public class TestFragment extends BaseFragment {
         super.lazyInit();
         Logger.i("fragment---第一次可见" + mTitle);
         ToastUtil.shortToast("fragment---第一次可见" + mTitle);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
