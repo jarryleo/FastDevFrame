@@ -41,7 +41,7 @@
 # 保留Annotation不混淆 保留和H5交互的接口不被混淆
 -keepattributes *Annotation*,InnerClasses
 -keepattributes *JavascriptInterface*
-
+-keep class android.webkit.JavascriptInterface {*;}
 
 # 避免混淆泛型
 -keepattributes Signature
@@ -213,4 +213,4 @@
 
 
 #glide 支持https混淆
--keep class net.ship56.service.glide.OkHttpGlideModule
+-keep class cn.leo.frame.glide.OkHttpGlideModule
