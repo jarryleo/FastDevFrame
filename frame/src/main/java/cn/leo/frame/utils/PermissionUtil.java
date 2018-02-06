@@ -1,6 +1,6 @@
 package cn.leo.frame.utils;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,82 +11,241 @@ import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 
 /**
- * Created by JarryLeo on 2017/5/14.
+ * Created by JarryLeo on 2018/2/6.
  */
 
 public class PermissionUtil {
-    private static final int REQUEST_CODE = 100;
+    private static String tag = "fragmentRequestPermissionCallBack";
+    private static final int REQUEST_CODE = 110;
+    private FragmentCallback mFragmentCallback;
+
+    public enum 权限 {
+        联系人("联系人", Manifest.permission.READ_CONTACTS),
+        电话("电话", Manifest.permission.READ_PHONE_STATE),
+        日历("日历", Manifest.permission.READ_CALENDAR),
+        相机("相机", Manifest.permission.CAMERA),
+        传感器("传感器", Manifest.permission.BODY_SENSORS),
+        定位("定位", Manifest.permission.ACCESS_FINE_LOCATION),
+        存储("存储", Manifest.permission.READ_EXTERNAL_STORAGE),
+        录音("录音", Manifest.permission.RECORD_AUDIO),
+        短信("短信", Manifest.permission.READ_SMS);
+        private String permissionCh;
+        private String permission;
+
+        权限(String permissionCh, String permission) {
+            this.permissionCh = permissionCh;
+            this.permission = permission;
+        }
+
+        public String getPermissionCh() {
+            return permissionCh;
+        }
+
+        public String getPermission() {
+            return permission;
+        }
+    }
+
+    public interface PermissionsResult {
+        void onSuccess();
+
+        void onFailed();
+    }
+
+    public static class FragmentCallback extends Fragment {
+        private PermissionsResult mResult;
+        private 权限[] mPermissions;
+
+        public void setResult(PermissionsResult result) {
+            mResult = result;
+        }
+
+        public void setPermissions(权限[] permissions) {
+            mPermissions = permissions;
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode,
+                                               @NonNull String[] permissions,
+                                               @NonNull int[] grantResults) {
+            boolean result = true;
+            switch (requestCode) {
+                case REQUEST_CODE:
+                    for (int i = 0; i < permissions.length; i++) {
+                        if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                            result = false;
+                            break;
+                        }
+                    }
+                    break;
+            }
+            if (mResult != null) {
+                if (result) {
+                    mResult.onSuccess();
+                } else {
+                    mResult.onFailed();
+                }
+            }
+            detach();
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == REQUEST_CODE) {
+                if (mResult != null && mPermissions != null) {
+                    boolean result = true;
+                    for (int i = 0; i < mPermissions.length; i++) {
+                        if (!checkPermission(getActivity(), mPermissions[i])) {
+                            result = false;
+                            break;
+                        }
+                    }
+                    if (result) {
+                        mResult.onSuccess();
+                    } else {
+                        mResult.onFailed();
+                    }
+                }
+            }
+            detach();
+        }
+
+        private void detach() {
+            FragmentTransaction fragmentTransaction =
+                    getFragmentManager().beginTransaction();
+            fragmentTransaction.detach(this);
+            fragmentTransaction.remove(this);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private FragmentActivity mActivity;
+    private PermissionsResult mResult;
+
+    private PermissionUtil(FragmentActivity activity, PermissionsResult result) {
+        this.mActivity = activity;
+        this.mResult = result;
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        Fragment fragmentByTag = fragmentManager.findFragmentByTag(tag);
+        if (fragmentByTag != null) {
+            mFragmentCallback = (FragmentCallback) fragmentByTag;
+            return;
+        }
+        mFragmentCallback = new FragmentCallback();
+        mFragmentCallback.setResult(result);
+        fragmentManager
+                .beginTransaction()
+                .add(mFragmentCallback, tag)
+                .commit();
+        fragmentManager.executePendingTransactions();
+    }
+
+    public static PermissionUtil getInstance(FragmentActivity activity, PermissionsResult result) {
+        return new PermissionUtil(activity, result);
+    }
 
     /**
      * 检查权限
      *
-     * @param context
-     * @param permission Manifest.permission.ACCESS_COARSE_LOCATION
+     * @param permission
      * @return
      */
-    public static boolean checkPermission(Context context, String permission) {
+    public boolean checkPermission(权限 permission) {
         //检查权限
-        int checkSelfPermission = ContextCompat.checkSelfPermission(context, permission);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        int checkSelfPermission =
+                ContextCompat
+                        .checkSelfPermission(mActivity, permission.getPermission());
         return checkSelfPermission == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
-     * 申请多个权限
+     * 静态检查权限
      *
-     * @param activity
-     * @param permissions
+     * @param context
+     * @param permission
+     * @return
      */
-    public static void requestPermissions(Activity activity, String[] permissions) {
-        if (Build.VERSION.SDK_INT < 23) {
-            return;
+    public static boolean checkPermission(Context context, 权限 permission) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
         }
-        //申请多个权限
-        ActivityCompat.requestPermissions(activity, permissions, REQUEST_CODE);
+        int checkSelfPermission =
+                ContextCompat
+                        .checkSelfPermission(context, permission.getPermission());
+        return checkSelfPermission == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
-     * 申请单个权限
+     * 申请权限
      *
-     * @param activity
-     * @param permission
-     * @param message    //用户取消提示后，我们提示用户的文字
+     * @param permissions
      */
-    public static void requestPermission(Activity activity, String permission, String message) {
-        if (Build.VERSION.SDK_INT < 23 || checkPermission(activity, permission)) {
-            return;
+    public void requestPermission(权限... permissions) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (mResult != null) {
+                mResult.onSuccess();
+            }
         }
-        //如果用户点了不提示，我们主动提示用户
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-            openSettingActivity(activity, message);
-        } else {
-            //申请单个权限
-            try {
-                ActivityCompat.requestPermissions(activity, new String[]{permission}, REQUEST_CODE);
-            } catch (Exception e) {
-                openSettingActivity(activity, message);
+        if (mActivity.getSupportFragmentManager().findFragmentByTag(tag) == null) {
+            throw new PermissionRequestException("一个权限申请工具类对象只能申请一次权限");
+        }
+        if (mFragmentCallback != null && permissions != null) {
+            mFragmentCallback.setPermissions(permissions);
+
+            String[] per = new String[permissions.length];
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < permissions.length; i++) {
+                per[i] = permissions[i].getPermission();
+                if (!checkPermission(permissions[i])) {
+                    sb.append(" [")
+                            .append(permissions[i].getPermissionCh())
+                            .append("] ");
+                }
+            }
+            //如果用户点了不提示，我们主动提示用户
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, permissions[0].getPermission())) {
+                openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+            } else {
+                //申请单个权限
+                try {
+                    mFragmentCallback.requestPermissions(per, REQUEST_CODE);
+                } catch (Exception e) {
+                    openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+                }
             }
         }
     }
 
     /**
      * 打开应用权限设置界面
-     *
-     * @param activity
-     * @param message
      */
-    private static void openSettingActivity(final Activity activity, String message) {
-
-        showMessageOKCancel(activity, message, new DialogInterface.OnClickListener() {
+    private void openSettingActivity(String message) {
+        showMessageOKCancel(message, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", activity.getPackageName(), null);
+                Uri uri = Uri.fromParts("package", mActivity.getPackageName(), null);
                 intent.setData(uri);
-                activity.startActivity(intent);
+                if (mFragmentCallback != null) {
+                    mFragmentCallback.startActivityForResult(intent, REQUEST_CODE);
+                }
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mResult.onFailed();
             }
         });
     }
@@ -94,43 +253,28 @@ public class PermissionUtil {
     /**
      * 弹出对话框
      *
-     * @param context
      * @param message
      * @param okListener
      */
-    private static void showMessageOKCancel(final Activity context, String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(context)
+    private void showMessageOKCancel(String message,
+                                     DialogInterface.OnClickListener okListener,
+                                     DialogInterface.OnClickListener cancelListener) {
+        new AlertDialog.Builder(mActivity)
                 .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton("确定", okListener)
+                .setNegativeButton("取消", cancelListener)
                 .create()
                 .show();
     }
 
-    /**
-     * 帮忙处理权限是否申请成功，Activity 的方法 onRequestPermissionsResult 调用
-     *
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     * @return
-     */
-    public static boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE:
-                for (int i = 0; i < permissions.length; i++) {
-                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                        return false;
-                    }
-                }
-                break;
+    static class PermissionRequestException extends RuntimeException {
+        public PermissionRequestException(String message) {
+            super(message);
         }
-        return true;
     }
+}
 
-
-
-    /*•	Normal Permissions如下
+/*•	Normal Permissions如下 （不需要动态申请，只需要在清单文件注册即可）
 
 ACCESS_LOCATION_EXTRA_COMMANDS
 ACCESS_NETWORK_STATE
@@ -167,7 +311,8 @@ WAKE_LOCK
 WRITE_SYNC_SETTINGS
 
 
-•	Dangerous Permissions:
+•Dangerous Permissions: (需要动态申请，当然也要在清单文件声明)
+
 group:android.permission-group.CONTACTS
   permission:android.permission.WRITE_CONTACTS
   permission:android.permission.GET_ACCOUNTS
@@ -212,4 +357,3 @@ group:android.permission-group.SMS
   permission:android.permission.READ_CELL_BROADCASTS
 
 */
-}
