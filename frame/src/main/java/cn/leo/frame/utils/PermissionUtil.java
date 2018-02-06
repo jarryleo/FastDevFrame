@@ -196,6 +196,7 @@ public class PermissionUtil {
             if (mResult != null) {
                 mResult.onSuccess();
             }
+            return;
         }
         if (mActivity.getSupportFragmentManager().findFragmentByTag(tag) == null) {
             throw new PermissionRequestException("一个权限申请工具类对象只能申请一次权限");
