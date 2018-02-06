@@ -214,11 +214,17 @@ public class PermissionUtil {
                             .append("] ");
                 }
             }
+            if (sb.length() < 1) {
+                if (mResult != null) {
+                    mResult.onSuccess();
+                }
+                return;
+            }
             //如果用户点了不提示，我们主动提示用户
             if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, permissions[0].getPermission())) {
                 openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
             } else {
-                //申请单个权限
+                //申请权限
                 try {
                     mFragmentCallback.requestPermissions(per, REQUEST_CODE);
                 } catch (Exception e) {
