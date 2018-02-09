@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         PermissionUtil.getInstance(this)
-                .request(PermissionUtil.权限.读取存储卡, PermissionUtil.权限.相机)
+                .request(PermissionUtil.permission.READ_EXTERNAL_STORAGE,
+                        PermissionUtil.permission.CAMERA)
                 .execute(new PermissionUtil.Result() {
                     @Override
                     public void onSuccess() {

@@ -35,22 +35,22 @@ public class PermissionUtil {
      * 权限中文翻译，需要特殊权限自己添加
      */
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
-    public enum 权限 {
-        读取联系人("读取联系人", Manifest.permission.READ_CONTACTS),
-        读取电话信息("读取电话信息", Manifest.permission.READ_PHONE_STATE),
-        读取日历("读取日历", Manifest.permission.READ_CALENDAR),
-        相机("相机", Manifest.permission.CAMERA),
-        传感器("传感器", Manifest.permission.BODY_SENSORS),
-        精确定位("精确定位", Manifest.permission.ACCESS_FINE_LOCATION),
-        粗略定位("粗略定位", Manifest.permission.ACCESS_COARSE_LOCATION),
-        读取存储卡("读取存储卡", Manifest.permission.READ_EXTERNAL_STORAGE),
-        写入存储卡("写入存储卡", Manifest.permission.WRITE_EXTERNAL_STORAGE),
-        录音("录音", Manifest.permission.RECORD_AUDIO),
-        读取短信("读取短信", Manifest.permission.READ_SMS);
+    public enum permission {
+        READ_CONTACTS("读取联系人", Manifest.permission.READ_CONTACTS),
+        READ_PHONE_STATE("读取电话信息", Manifest.permission.READ_PHONE_STATE),
+        READ_CALENDAR("读取日历", Manifest.permission.READ_CALENDAR),
+        CAMERA("相机", Manifest.permission.CAMERA),
+        BODY_SENSORS("传感器", Manifest.permission.BODY_SENSORS),
+        ACCESS_FINE_LOCATION("精确定位", Manifest.permission.ACCESS_FINE_LOCATION),
+        ACCESS_COARSE_LOCATION("粗略定位", Manifest.permission.ACCESS_COARSE_LOCATION),
+        READ_EXTERNAL_STORAGE("读取存储卡", Manifest.permission.READ_EXTERNAL_STORAGE),
+        WRITE_EXTERNAL_STORAGE("写入存储卡", Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        RECORD_AUDIO("录音", Manifest.permission.RECORD_AUDIO),
+        READ_SMS("读取短信", Manifest.permission.READ_SMS);
         private String permissionCh;
         private String permission;
 
-        权限(String permissionCh, String permission) {
+        permission(String permissionCh, String permission) {
             this.permissionCh = permissionCh;
             this.permission = permission;
         }
@@ -75,7 +75,7 @@ public class PermissionUtil {
      */
     public static class FragmentCallback extends Fragment {
         private Result mResult;
-        private 权限[] mPermissions;
+        private permission[] mPermissions;
         private long mRequestTime;
 
         public void setRequestTime() {
@@ -86,7 +86,7 @@ public class PermissionUtil {
             mResult = result;
         }
 
-        public void setPermissions(权限[] permissions) {
+        public void setPermissions(permission[] permissions) {
             mPermissions = permissions;
         }
 
@@ -112,7 +112,7 @@ public class PermissionUtil {
                 } else {
                     if (SystemClock.elapsedRealtime() - mRequestTime < 300) {
                         StringBuilder sb = new StringBuilder();
-                        for (权限 mPermission : mPermissions) {
+                        for (permission mPermission : mPermissions) {
                             if (!PermissionUtil.checkPermission(getActivity(), mPermission)) {
                                 sb.append(" [")
                                         .append(mPermission.getPermissionCh())
@@ -133,7 +133,7 @@ public class PermissionUtil {
             if (requestCode == REQUEST_CODE) {
                 if (mResult != null && mPermissions != null) {
                     boolean result = true;
-                    for (权限 mPermission : mPermissions) {
+                    for (permission mPermission : mPermissions) {
                         if (!checkPermission(getActivity(), mPermission)) {
                             result = false;
                             break;
@@ -198,7 +198,7 @@ public class PermissionUtil {
     }
 
     private FragmentActivity mActivity;
-    private 权限[] mPermissions;
+    private permission[] mPermissions;
 
     private PermissionUtil(FragmentActivity activity) {
         this.mActivity = activity;
@@ -221,7 +221,7 @@ public class PermissionUtil {
      * @param permissions 权限列表
      * @return 返回自身链式编程
      */
-    public PermissionUtil request(权限... permissions) {
+    public PermissionUtil request(permission... permissions) {
         mPermissions = permissions;
         return this;
     }
@@ -263,7 +263,7 @@ public class PermissionUtil {
      * @return 权限列表是否全部通过
      */
     private boolean checkPermissions() {
-        for (权限 mPermission : mPermissions) {
+        for (permission mPermission : mPermissions) {
             if (!checkPermission(mPermission)) {
                 return false;
             }
@@ -277,7 +277,7 @@ public class PermissionUtil {
      * @param permission 权限列表
      * @return 权限是否通过
      */
-    private boolean checkPermission(权限 permission) {
+    private boolean checkPermission(permission permission) {
         //检查权限
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -295,7 +295,7 @@ public class PermissionUtil {
      * @param permission 权限列表
      * @return 权限是否通过
      */
-    private static boolean checkPermission(Context context, 权限 permission) {
+    private static boolean checkPermission(Context context, permission permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
