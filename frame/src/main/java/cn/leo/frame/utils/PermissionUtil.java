@@ -1,6 +1,7 @@
 package cn.leo.frame.utils;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +21,9 @@ import android.support.v4.content.ContextCompat;
 
 /**
  * Created by JarryLeo on 2018/2/6.
+ * 安卓8.0以下申请一个权限，用户同意后整个权限组的权限都不用申请可以直接使用
+ * 8.0后每个权限都要单独申请，不能一次申请通过后,整个权限组都不用申请;
+ * 但是用户同意权限组内一个之后，其它申请直接通过(之前是不申请可以直接用，现在是申请直接过(但是必须申请))
  */
 
 public class PermissionUtil {
@@ -26,16 +31,22 @@ public class PermissionUtil {
     private static final int REQUEST_CODE = 110;
     private FragmentCallback mFragmentCallback;
 
+    /**
+     * 权限中文翻译，需要特殊权限自己添加
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH)
     public enum 权限 {
-        联系人("联系人", Manifest.permission.READ_CONTACTS),
-        电话("电话", Manifest.permission.READ_PHONE_STATE),
-        日历("日历", Manifest.permission.READ_CALENDAR),
+        读取联系人("读取联系人", Manifest.permission.READ_CONTACTS),
+        读取电话信息("读取电话信息", Manifest.permission.READ_PHONE_STATE),
+        读取日历("读取日历", Manifest.permission.READ_CALENDAR),
         相机("相机", Manifest.permission.CAMERA),
         传感器("传感器", Manifest.permission.BODY_SENSORS),
-        定位("定位", Manifest.permission.ACCESS_FINE_LOCATION),
-        存储("存储", Manifest.permission.READ_EXTERNAL_STORAGE),
+        精确定位("精确定位", Manifest.permission.ACCESS_FINE_LOCATION),
+        粗略定位("粗略定位", Manifest.permission.ACCESS_COARSE_LOCATION),
+        读取存储卡("读取存储卡", Manifest.permission.READ_EXTERNAL_STORAGE),
+        写入存储卡("写入存储卡", Manifest.permission.WRITE_EXTERNAL_STORAGE),
         录音("录音", Manifest.permission.RECORD_AUDIO),
-        短信("短信", Manifest.permission.READ_SMS);
+        读取短信("读取短信", Manifest.permission.READ_SMS);
         private String permissionCh;
         private String permission;
 
@@ -53,17 +64,25 @@ public class PermissionUtil {
         }
     }
 
-    public interface PermissionsResult {
+    public interface Result {
         void onSuccess();
 
         void onFailed();
     }
 
+    /**
+     * fragment，作为权限回调监听，和从设置界面返回监听
+     */
     public static class FragmentCallback extends Fragment {
-        private PermissionsResult mResult;
+        private Result mResult;
         private 权限[] mPermissions;
+        private long mRequestTime;
 
-        public void setResult(PermissionsResult result) {
+        public void setRequestTime() {
+            mRequestTime = SystemClock.elapsedRealtime();
+        }
+
+        public void setResult(Result result) {
             mResult = result;
         }
 
@@ -88,12 +107,24 @@ public class PermissionUtil {
             }
             if (mResult != null) {
                 if (result) {
+                    detach();
                     mResult.onSuccess();
                 } else {
-                    mResult.onFailed();
+                    if (SystemClock.elapsedRealtime() - mRequestTime < 300) {
+                        StringBuilder sb = new StringBuilder();
+                        for (权限 mPermission : mPermissions) {
+                            if (!PermissionUtil.checkPermission(getActivity(), mPermission)) {
+                                sb.append(" [")
+                                        .append(mPermission.getPermissionCh())
+                                        .append("] ");
+                            }
+                        }
+                        openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+                    } else {
+                        mResult.onFailed();
+                    }
                 }
             }
-            detach();
         }
 
         @Override
@@ -102,22 +133,23 @@ public class PermissionUtil {
             if (requestCode == REQUEST_CODE) {
                 if (mResult != null && mPermissions != null) {
                     boolean result = true;
-                    for (int i = 0; i < mPermissions.length; i++) {
-                        if (!checkPermission(getActivity(), mPermissions[i])) {
+                    for (权限 mPermission : mPermissions) {
+                        if (!checkPermission(getActivity(), mPermission)) {
                             result = false;
                             break;
                         }
                     }
                     if (result) {
+                        detach();
                         mResult.onSuccess();
                     } else {
                         mResult.onFailed();
                     }
                 }
             }
-            detach();
         }
 
+        //解绑fragment
         private void detach() {
             FragmentTransaction fragmentTransaction =
                     getFragmentManager().beginTransaction();
@@ -125,40 +157,127 @@ public class PermissionUtil {
             fragmentTransaction.remove(this);
             fragmentTransaction.commit();
         }
+
+        /**
+         * 打开应用权限设置界面
+         */
+        public void openSettingActivity(String message) {
+            showMessageOKCancel(message, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivityForResult(intent, REQUEST_CODE);
+                }
+            }, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mResult.onFailed();
+                }
+            });
+        }
+
+        /**
+         * 弹出对话框
+         *
+         * @param message    消息内容
+         * @param okListener 点击回调
+         */
+        private void showMessageOKCancel(String message,
+                                         DialogInterface.OnClickListener okListener,
+                                         DialogInterface.OnClickListener cancelListener) {
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(message)
+                    .setPositiveButton("确定", okListener)
+                    .setNegativeButton("取消", cancelListener)
+                    .create()
+                    .show();
+        }
     }
 
     private FragmentActivity mActivity;
-    private PermissionsResult mResult;
+    private 权限[] mPermissions;
 
-    private PermissionUtil(FragmentActivity activity, PermissionsResult result) {
+    private PermissionUtil(FragmentActivity activity) {
         this.mActivity = activity;
-        this.mResult = result;
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+
+    }
+
+    /**
+     * 获取请求权限实例
+     *
+     * @param activity FragmentActivity
+     * @return 请求权限工具对象
+     */
+    public static PermissionUtil getInstance(FragmentActivity activity) {
+        return new PermissionUtil(activity);
+    }
+
+    /**
+     * 需要请求的权限列表
+     *
+     * @param permissions 权限列表
+     * @return 返回自身链式编程
+     */
+    public PermissionUtil request(权限... permissions) {
+        mPermissions = permissions;
+        return this;
+    }
+
+    /**
+     * 执行权限请求
+     *
+     * @param result 请求结果回调
+     */
+    public void execute(Result result) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermissions()) {
+            if (result != null) {
+                result.onSuccess();
+            }
+            return;
+        }
+        //创建fragment回调
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         Fragment fragmentByTag = fragmentManager.findFragmentByTag(tag);
         if (fragmentByTag != null) {
             mFragmentCallback = (FragmentCallback) fragmentByTag;
-            return;
+            mFragmentCallback.setResult(result);
+        } else {
+            mFragmentCallback = new FragmentCallback();
+            mFragmentCallback.setResult(result);
+            fragmentManager
+                    .beginTransaction()
+                    .add(mFragmentCallback, tag)
+                    .commit();
+            fragmentManager.executePendingTransactions();
         }
-        mFragmentCallback = new FragmentCallback();
-        mFragmentCallback.setResult(result);
-        fragmentManager
-                .beginTransaction()
-                .add(mFragmentCallback, tag)
-                .commit();
-        fragmentManager.executePendingTransactions();
+        //开始请求
+        requestPermission();
     }
 
-    public static PermissionUtil getInstance(FragmentActivity activity, PermissionsResult result) {
-        return new PermissionUtil(activity, result);
+    /**
+     * 检查权限列表是否全部通过
+     *
+     * @return 权限列表是否全部通过
+     */
+    private boolean checkPermissions() {
+        for (权限 mPermission : mPermissions) {
+            if (!checkPermission(mPermission)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * 检查权限
      *
-     * @param permission
-     * @return
+     * @param permission 权限列表
+     * @return 权限是否通过
      */
-    public boolean checkPermission(权限 permission) {
+    private boolean checkPermission(权限 permission) {
         //检查权限
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
@@ -172,11 +291,11 @@ public class PermissionUtil {
     /**
      * 静态检查权限
      *
-     * @param context
-     * @param permission
-     * @return
+     * @param context    上下文
+     * @param permission 权限列表
+     * @return 权限是否通过
      */
-    public static boolean checkPermission(Context context, 权限 permission) {
+    private static boolean checkPermission(Context context, 权限 permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
         }
@@ -188,94 +307,43 @@ public class PermissionUtil {
 
     /**
      * 申请权限
-     *
-     * @param permissions
      */
-    public void requestPermission(权限... permissions) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            if (mResult != null) {
-                mResult.onSuccess();
-            }
-            return;
-        }
+    private void requestPermission() {
+
         if (mActivity.getSupportFragmentManager().findFragmentByTag(tag) == null) {
             throw new PermissionRequestException("一个权限申请工具类对象只能申请一次权限");
         }
-        if (mFragmentCallback != null && permissions != null) {
-            mFragmentCallback.setPermissions(permissions);
-
-            String[] per = new String[permissions.length];
+        if (mFragmentCallback != null && mPermissions != null) {
+            mFragmentCallback.setPermissions(mPermissions);
+            //提取权限列表里面没通过的
+            String[] per = new String[mPermissions.length];
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < permissions.length; i++) {
-                per[i] = permissions[i].getPermission();
-                if (!checkPermission(permissions[i])) {
+            for (int i = 0; i < mPermissions.length; i++) {
+                per[i] = mPermissions[i].getPermission();
+                if (!checkPermission(mPermissions[i])) {
                     sb.append(" [")
-                            .append(permissions[i].getPermissionCh())
+                            .append(mPermissions[i].getPermissionCh())
                             .append("] ");
                 }
             }
-            if (sb.length() < 1) {
-                if (mResult != null) {
-                    mResult.onSuccess();
-                }
-                return;
-            }
-            //如果用户点了不提示，我们主动提示用户
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, permissions[0].getPermission())) {
-                openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+            //如果用户点了不提示(或者同时申请多个权限)，我们主动提示用户
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, mPermissions[0].getPermission())) {
+                mFragmentCallback.openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
             } else {
                 //申请权限
                 try {
+                    mFragmentCallback.setRequestTime();
                     mFragmentCallback.requestPermissions(per, REQUEST_CODE);
                 } catch (Exception e) {
-                    openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+                    mFragmentCallback.openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
                 }
             }
         }
     }
 
-    /**
-     * 打开应用权限设置界面
-     */
-    private void openSettingActivity(String message) {
-        showMessageOKCancel(message, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", mActivity.getPackageName(), null);
-                intent.setData(uri);
-                if (mFragmentCallback != null) {
-                    mFragmentCallback.startActivityForResult(intent, REQUEST_CODE);
-                }
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mResult.onFailed();
-            }
-        });
-    }
-
-    /**
-     * 弹出对话框
-     *
-     * @param message
-     * @param okListener
-     */
-    private void showMessageOKCancel(String message,
-                                     DialogInterface.OnClickListener okListener,
-                                     DialogInterface.OnClickListener cancelListener) {
-        new AlertDialog.Builder(mActivity)
-                .setMessage(message)
-                .setPositiveButton("确定", okListener)
-                .setNegativeButton("取消", cancelListener)
-                .create()
-                .show();
-    }
 
     static class PermissionRequestException extends RuntimeException {
-        public PermissionRequestException(String message) {
+        PermissionRequestException(String message) {
             super(message);
         }
     }

@@ -44,8 +44,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        PermissionUtil permissionUtil =
-                PermissionUtil.getInstance(this, new PermissionUtil.PermissionsResult() {
+        PermissionUtil.getInstance(this)
+                .request(PermissionUtil.权限.读取存储卡, PermissionUtil.权限.相机)
+                .execute(new PermissionUtil.Result() {
                     @Override
                     public void onSuccess() {
                         ToastUtil.shortToast("申请权限成功");
@@ -56,7 +57,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         ToastUtil.shortToast("申请权限失败");
                     }
                 });
-
-        permissionUtil.requestPermission(PermissionUtil.权限.存储, PermissionUtil.权限.相机);
     }
 }
