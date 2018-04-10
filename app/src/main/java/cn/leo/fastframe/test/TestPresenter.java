@@ -1,9 +1,8 @@
 package cn.leo.fastframe.test;
 
-import cn.leo.fastframe.MainActivity;
+import cn.leo.fastframe.activity.MainActivity;
 import cn.leo.fastframe.base.BasePresenter;
 import cn.leo.frame.network.ResultListener;
-import cn.leo.frame.utils.ToastUtil;
 
 /**
  * Created by Leo on 2018/1/5.

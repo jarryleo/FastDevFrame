@@ -151,11 +151,12 @@ public class PermissionUtil {
 
         //解绑fragment
         private void detach() {
+            if (!isAdded()) return;
             FragmentTransaction fragmentTransaction =
                     getFragmentManager().beginTransaction();
             fragmentTransaction.detach(this);
             fragmentTransaction.remove(this);
-            fragmentTransaction.commit();
+            fragmentTransaction.commitAllowingStateLoss();
         }
 
         /**

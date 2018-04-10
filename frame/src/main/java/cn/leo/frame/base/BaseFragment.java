@@ -1,5 +1,7 @@
 package cn.leo.frame.base;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -118,5 +120,10 @@ public abstract class BaseFragment extends Fragment {
             firstVisible = savedInstanceState.getBoolean("first", firstVisible);
         }
         super.onCreate(savedInstanceState);
+    }
+
+    public void startActivity(Class<Activity> activityClass) {
+        if (!isAdded()) return;
+        super.startActivity(new Intent(getActivity(), activityClass));
     }
 }

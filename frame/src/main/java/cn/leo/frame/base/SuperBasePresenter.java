@@ -39,7 +39,7 @@ public abstract class SuperBasePresenter<T, Y extends LifecycleOwner> implements
      *
      * @return
      */
-    private HttpLoader getHttpLoader() {
+    public HttpLoader getHttpLoader() {
         return new HttpLoader.Builder(getBaseUrl()).build();
     }
 

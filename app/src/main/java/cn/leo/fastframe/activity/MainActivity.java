@@ -1,11 +1,13 @@
-package cn.leo.fastframe;
+package cn.leo.fastframe.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import cn.leo.fastframe.R;
 import cn.leo.fastframe.adapter.TestFragmentAdapter;
 import cn.leo.fastframe.test.TestBean;
 import cn.leo.fastframe.test.TestPresenter;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void onGetNewsListSuccess(TestBean bean) {
 
+        Intent a = new Intent();
+        a.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
     @Override

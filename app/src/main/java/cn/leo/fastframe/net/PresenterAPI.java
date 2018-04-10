@@ -2,6 +2,7 @@ package cn.leo.fastframe.net;
 
 import cn.leo.fastframe.test.TestBean;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -17,6 +18,8 @@ public interface PresenterAPI {
                                      @Query("page") int page,
                                      @Query("pageSize") int pageSize);
 
+    @POST(NetConfig.NEWS_LIST)
+    Observable<TestBean> getPosts();
    /* @GET(NetConfig.BASE_URL)
     Observable<TestBean> requestNewsPicData(@Query("param") int param);
 
