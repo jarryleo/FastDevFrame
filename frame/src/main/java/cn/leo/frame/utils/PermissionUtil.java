@@ -40,6 +40,7 @@ public class PermissionUtil {
         READ_PHONE_STATE("读取电话信息", Manifest.permission.READ_PHONE_STATE),
         READ_CALENDAR("读取日历", Manifest.permission.READ_CALENDAR),
         CAMERA("相机", Manifest.permission.CAMERA),
+        CALL_PHONE("拨打电话", Manifest.permission.CALL_PHONE),
         BODY_SENSORS("传感器", Manifest.permission.BODY_SENSORS),
         ACCESS_FINE_LOCATION("精确定位", Manifest.permission.ACCESS_FINE_LOCATION),
         ACCESS_COARSE_LOCATION("粗略定位", Manifest.permission.ACCESS_COARSE_LOCATION),
@@ -119,7 +120,7 @@ public class PermissionUtil {
                                         .append("] ");
                             }
                         }
-                        openSettingActivity("需要" + sb.toString() + "权限,前往开启?");
+                        openSettingActivity("本次操作需要" + sb.toString() + "权限,是否前往设置开启?");
                     } else {
                         mResult.onFailed();
                     }
@@ -191,8 +192,8 @@ public class PermissionUtil {
                                          DialogInterface.OnClickListener cancelListener) {
             new AlertDialog.Builder(getActivity())
                     .setMessage(message)
-                    .setPositiveButton("确定", okListener)
-                    .setNegativeButton("取消", cancelListener)
+                    .setPositiveButton("开启", okListener)
+                    .setNegativeButton("拒绝", cancelListener)
                     .create()
                     .show();
         }

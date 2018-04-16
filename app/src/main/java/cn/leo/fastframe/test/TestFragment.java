@@ -18,6 +18,7 @@ import cn.leo.frame.utils.ToastUtil;
 public class TestFragment extends BaseFragment {
     private String mTitle;
 
+
     @Override
     public View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return null;

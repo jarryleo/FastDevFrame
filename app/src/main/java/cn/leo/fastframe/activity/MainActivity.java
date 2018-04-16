@@ -11,11 +11,12 @@ import cn.leo.fastframe.R;
 import cn.leo.fastframe.adapter.TestFragmentAdapter;
 import cn.leo.fastframe.test.TestBean;
 import cn.leo.fastframe.test.TestPresenter;
+import cn.leo.frame.base.BaseActivity;
 import cn.leo.frame.utils.PermissionUtil;
 import cn.leo.frame.utils.ToastUtil;
 import cn.leo.frame.utils.UIUtil;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private TestPresenter mPresenter;
     private ViewPager mVp;
