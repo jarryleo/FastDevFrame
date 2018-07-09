@@ -1,6 +1,7 @@
 package cn.leo.fastframe.net;
 
 import cn.leo.fastframe.test.TestBean;
+import cn.leo.frame.base.BaseAPI;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
@@ -10,7 +11,7 @@ import rx.Observable;
  * Created by JarryLeo on 2017/4/14.
  */
 
-public interface PresenterAPI {
+public interface PresenterAPI extends BaseAPI {
     @GET(NetConfig.NEWS_LIST)
     Observable<TestBean> getNewsList(@Query("access_token") String access_token,
                                      @Query("catalog") int catalog,
