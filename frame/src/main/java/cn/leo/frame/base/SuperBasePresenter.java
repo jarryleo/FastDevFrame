@@ -17,9 +17,9 @@ import rx.subscriptions.CompositeSubscription;
  * Created by Leo on 2018/1/4.
  */
 
-public abstract class SuperBasePresenter<T extends BaseAPI, Y extends BaseViewInterface> implements LifecycleObserver {
+public abstract class SuperBasePresenter<T, Y extends BaseViewInterface> implements LifecycleObserver {
     //泛型T为网络请求API接口类,在BasePresenter实现
-    private static BaseAPI mAPI;
+    private T mAPI;
     private static HttpLoader mHttpLoader;
     //泛型Y为具体的Activity或者Fragment,留给具体的presenter实现
     //写法：BasePresenter<T extends LifecycleOwner> extends SuperBasePresenter<PresenterAPI, T>
@@ -29,7 +29,7 @@ public abstract class SuperBasePresenter<T extends BaseAPI, Y extends BaseViewIn
     private CompositeSubscription mCompositeSubscription;
 
     {
-        if (mAPI == null) {
+        if (mHttpLoader == null) {
             mHttpLoader = getHttpLoader();
             mAPI = mHttpLoader.create(getAPIClass());
         }
@@ -48,7 +48,7 @@ public abstract class SuperBasePresenter<T extends BaseAPI, Y extends BaseViewIn
     public abstract String getBaseUrl();
 
     public T API() {
-        return (T) mAPI;
+        return mAPI;
     }
 
     public abstract Class<T> getAPIClass();
