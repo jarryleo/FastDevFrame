@@ -3,15 +3,14 @@ package cn.leo.fastframe.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 import cn.leo.fastframe.R;
 import cn.leo.fastframe.adapter.TestFragmentAdapter;
+import cn.leo.fastframe.base.BaseActivity;
 import cn.leo.fastframe.test.TestBean;
 import cn.leo.fastframe.test.TestPresenter;
-import cn.leo.frame.base.BaseActivity;
 import cn.leo.frame.utils.PermissionUtil;
 import cn.leo.frame.utils.ToastUtil;
 import cn.leo.frame.utils.UIUtil;
