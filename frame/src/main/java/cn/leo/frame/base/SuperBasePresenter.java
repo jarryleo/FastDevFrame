@@ -62,7 +62,8 @@ public abstract class SuperBasePresenter<T, Y extends BaseViewInterface> impleme
     public <O> Subscription executeApi(final Observable<O> observable,
                                        final ResultListener<O> resultListener) {
         Subscription executor = mHttpLoader.executor(observable, resultListener);
-        mCompositeSubscription.add(executor);
+        if (executor != null)
+            mCompositeSubscription.add(executor);
         return executor;
     }
 
