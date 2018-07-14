@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import cn.leo.frame.base.BaseFragment;
+import cn.leo.frame.base.SuperBaseFragment;
 import cn.leo.frame.utils.Logger;
 import cn.leo.frame.utils.ToastUtil;
 
@@ -15,7 +15,7 @@ import cn.leo.frame.utils.ToastUtil;
  * Created by Leo on 2018/1/5.
  */
 
-public class TestFragment extends BaseFragment {
+public class TestFragment extends SuperBaseFragment {
     private String mTitle;
 
 

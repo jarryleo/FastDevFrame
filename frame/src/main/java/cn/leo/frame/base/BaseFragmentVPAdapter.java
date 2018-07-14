@@ -24,12 +24,12 @@ public abstract class BaseFragmentVPAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        BaseFragment fragment = (BaseFragment) super.instantiateItem(container, position);
+        SuperBaseFragment fragment = (SuperBaseFragment) super.instantiateItem(container, position);
         initFragment(fragment, position);
         return fragment;
     }
 
-    protected abstract void initFragment(BaseFragment fragment, int position);
+    protected abstract void initFragment(SuperBaseFragment fragment, int position);
 
     @Override
     public int getCount() {

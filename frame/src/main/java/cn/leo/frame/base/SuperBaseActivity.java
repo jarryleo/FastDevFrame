@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 public class SuperBaseActivity extends AppCompatActivity implements BaseViewInterface {
     public Bundle getBundle() {
-        return getIntent().getBundleExtra("bundle");
+        return getIntent().getExtras();
     }
 
     public void jumpTo(Class<? extends Activity> activityClass) {
@@ -24,13 +24,13 @@ public class SuperBaseActivity extends AppCompatActivity implements BaseViewInte
 
     public void jumpTo(Class<? extends Activity> activityClass, Bundle bundle) {
         Intent intent = new Intent(this, activityClass);
-        intent.putExtra("bundle", bundle);
+        intent.putExtras(bundle);
         super.startActivity(intent);
     }
 
     public void jumpTo(Class<? extends Activity> activityClass, Bundle bundle, int requestCode) {
         Intent intent = new Intent(this, activityClass);
-        intent.putExtra("bundle", bundle);
+        intent.putExtras(bundle);
         super.startActivityForResult(intent, requestCode);
     }
 
@@ -43,7 +43,7 @@ public class SuperBaseActivity extends AppCompatActivity implements BaseViewInte
     public void backTo(Class<? extends Activity> activityClass, Bundle bundle) {
         Intent intent = new Intent(this, activityClass);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("bundle", bundle);
+        intent.putExtras(bundle);
         super.startActivity(intent);
     }
 

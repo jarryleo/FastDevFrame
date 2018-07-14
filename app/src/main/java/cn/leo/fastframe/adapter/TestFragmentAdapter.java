@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
 import cn.leo.fastframe.test.TestFragment;
-import cn.leo.frame.base.BaseFragment;
+import cn.leo.frame.base.SuperBaseFragment;
 import cn.leo.frame.base.BaseFragmentVPAdapter;
 
 /**
@@ -23,7 +23,7 @@ public class TestFragmentAdapter extends BaseFragmentVPAdapter {
     }
 
     @Override
-    protected void initFragment(BaseFragment fragment, int position) {
+    protected void initFragment(SuperBaseFragment fragment, int position) {
         Bundle data = new Bundle();
         data.putString("title", "第" + position + "个");
         fragment.setArguments(data);

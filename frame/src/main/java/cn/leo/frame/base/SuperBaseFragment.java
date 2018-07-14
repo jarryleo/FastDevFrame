@@ -14,7 +14,7 @@ import android.widget.TextView;
  * Created by Leo on 2018/2/1.
  */
 
-public abstract class BaseFragment extends Fragment {
+public abstract class SuperBaseFragment extends Fragment {
     private boolean firstVisible = true;
 
     @Nullable
