@@ -21,7 +21,7 @@ public class TestPresenter extends BasePresenter<MainActivity> {
     }
 
     public void testHttp() {
-        executeApi(getAPI().getNewsList(
+        executeApi(API().getNewsList(
                 "",
                 1,
                 "json",
