@@ -102,6 +102,13 @@ public class HttpLoader {
                             resultListener.onFailed(msg);
                         }
                     }
+
+                    @Override
+                    public void onError() {
+                        if (resultListener != null) {
+                            resultListener.onError();
+                        }
+                    }
                 });
 
         return subscribe;
