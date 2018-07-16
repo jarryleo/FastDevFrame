@@ -3,6 +3,7 @@ package cn.leo.frame.network;/**
  */
 
 
+import cn.leo.frame.utils.ToastUtil;
 import rx.Observer;
 
 /**
@@ -29,5 +30,6 @@ public abstract class ResultListener<T> implements Observer<T> {
     public abstract void onFailed(String msg);
 
     public void onError() {
+        ToastUtil.shortToast("网络异常");
     }
 }

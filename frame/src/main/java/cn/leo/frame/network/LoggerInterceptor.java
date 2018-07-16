@@ -1,7 +1,6 @@
 package cn.leo.frame.network;
 
 
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -28,9 +27,10 @@ public class LoggerInterceptor implements Interceptor {
         Response response = chain.proceed(request);
         ResponseBody body = response.body();
         BufferedSource source = body.source();
-        source.request(Long.MAX_VALUE); // Buffer the entire body.
+        source.request(Integer.MAX_VALUE); // Buffer the entire body.
         Buffer buffer = source.buffer();
-        if (buffer.size() > 1024 * 16) {
+        if (buffer.size() > 1024 * 16) { //接口数据大于16K不显示
+            Logger.i(request.url() + " 接口返回数据(长度:" + buffer.size() + ")大于16K不打印,点击链接在网页查看");
             return response;
         }
         Charset charset = Charset.defaultCharset();
