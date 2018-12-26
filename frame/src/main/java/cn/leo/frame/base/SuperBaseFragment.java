@@ -57,7 +57,11 @@ public abstract class SuperBaseFragment extends Fragment {
             onVisibilityChangedToUser(isVisibleToUser, true);
         }
     }
-
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        onVisibilityChangedToUser(!hidden, false);
+    }
     /**
      * 当Fragment对用户的可见性发生了改变的时候就会回调此方法
      *

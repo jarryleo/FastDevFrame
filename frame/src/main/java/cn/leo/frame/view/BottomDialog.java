@@ -2,9 +2,9 @@ package cn.leo.frame.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -21,8 +21,7 @@ public abstract class BottomDialog extends Dialog {
 
     public BottomDialog(@NonNull Context context) {
         super(context, R.style.BottomDialog);
-        View contentView = getContentView();
-        setContentView(contentView);
+        setContentView(getContentViewResId());
         ButterKnife.bind(this);
         mContext = context;
         WindowManager.LayoutParams params = getWindow().getAttributes();
@@ -37,5 +36,12 @@ public abstract class BottomDialog extends Dialog {
         show();
     }
 
-    protected abstract View getContentView();
+    /**
+     * 获取底部dialog的布局id
+     *
+     * @return 布局id
+     * @return 布局id
+     */
+    protected abstract @LayoutRes
+    int getContentViewResId();
 }
