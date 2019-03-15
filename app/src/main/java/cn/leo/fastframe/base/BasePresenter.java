@@ -25,5 +25,4 @@ public class BasePresenter<T extends BaseViewInterface>
     public Class<PresenterAPI> getAPIClass() {
         return PresenterAPI.class;
     }
-
 }
