@@ -163,10 +163,8 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      *
      * @param itemHelper 条目帮助类
      * @param t          对应数据
-     * @param layout     条目对应的布局，多布局的时候使用
-     * @param position   条目索引
      */
-    protected abstract void bindData(ItemHelper itemHelper, T t, int position, @LayoutRes int layout);
+    protected abstract void bindData(ItemHelper itemHelper, T t);
 
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -184,30 +182,27 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private @LayoutRes
-        int layoutRes;
         private final ItemHelper mItemHelper;
         private T mData;
-        private int mPosition;
 
         private ViewHolder(ViewGroup parent, int layout) {
             super(LayoutInflater.from(parent.getContext())
                     .inflate(layout, parent, false));
-            layoutRes = layout;
             mItemHelper = new ItemHelper(itemView);
+            mItemHelper.setLayoutResId(layout);
             itemView.setOnClickListener(this);
         }
 
         public void setData(T t, int position) {
             mData = t;
-            mPosition = position;
-            bindData(mItemHelper, t, position, layoutRes);
+            mItemHelper.setPosition(position);
+            bindData(mItemHelper, t);
         }
 
         @Override
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
-                mOnItemClickListener.onItemClick(mData, mPosition);
+                mOnItemClickListener.onItemClick(mData, mItemHelper.getPosition());
             }
         }
     }
@@ -215,9 +210,29 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     public class ItemHelper {
         private SparseArray<View> viewCache = new SparseArray<>();
         private View itemView;
+        private @LayoutRes
+        int layoutResId;
+        private int mPosition;
 
         public ItemHelper(View itemView) {
             this.itemView = itemView;
+        }
+
+        public @LayoutRes
+        int getLayoutResId() {
+            return layoutResId;
+        }
+
+        private void setLayoutResId(@LayoutRes int layoutResId) {
+            this.layoutResId = layoutResId;
+        }
+
+        public int getPosition() {
+            return mPosition;
+        }
+
+        private void setPosition(int position) {
+            mPosition = position;
         }
 
         public View getItemView() {
