@@ -6,6 +6,7 @@ import android.support.annotation.LayoutRes;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -183,6 +184,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     }
 
     public class ItemHelper {
+        private SparseArray<View> viewCache = new SparseArray<>();
         private View itemView;
 
         public ItemHelper(View itemView) {
@@ -194,7 +196,15 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         }
 
         public final <V extends View> V getViewById(@IdRes int viewId) {
-            return itemView.findViewById(viewId);
+            View v = viewCache.get(viewId);
+            V view;
+            if (v == null) {
+                view = itemView.findViewById(viewId);
+                viewCache.put(viewId, view);
+            } else {
+                view = (V) v;
+            }
+            return view;
         }
 
         /**
@@ -204,7 +214,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
          * @param text   设置的文字
          */
         public void setText(@IdRes int viewId, CharSequence text) {
-            View view = itemView.findViewById(viewId);
+            View view = getViewById(viewId);
             if (view instanceof TextView) {
                 ((TextView) view).setText(text);
             } else {
@@ -213,8 +223,14 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             }
         }
 
+        /**
+         * 给图片控件设置资源图片
+         *
+         * @param viewId 图片控件id
+         * @param resId  资源id
+         */
         public void setImageResource(@IdRes int viewId, @DrawableRes int resId) {
-            View view = itemView.findViewById(viewId);
+            View view = getViewById(viewId);
             if (view instanceof ImageView) {
                 ((ImageView) view).setImageResource(resId);
             } else {

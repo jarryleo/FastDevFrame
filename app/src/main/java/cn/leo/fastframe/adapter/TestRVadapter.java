@@ -1,5 +1,7 @@
 package cn.leo.fastframe.adapter;
 
+import android.view.View;
+
 import cn.leo.fastframe.R;
 import cn.leo.fastframe.bean.TestBean;
 import cn.leo.frame.base.AsyncRVAdapter;
@@ -27,5 +29,14 @@ public class TestRVadapter extends AsyncRVAdapter<TestBean> {
     @Override
     protected void bindData(ItemHelper itemHelper, TestBean testBean, int layout) {
         itemHelper.setText(R.id.tv_test, testBean.content);
+
+        itemHelper.getViewById(R.id.tv_test).setVisibility(View.GONE);
+
+        itemHelper.getViewById(R.id.tv_test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 }
