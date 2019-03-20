@@ -22,6 +22,7 @@ import java.util.List;
  */
 public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     private AsyncListDiffer<T> mDiffer;
+    private OnItemClickListener mOnItemClickListener;
     private DiffUtil.ItemCallback<T> diffCallback = new DiffUtil.ItemCallback<T>() {
 
         @Override
@@ -135,7 +136,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ((ViewHolder) holder).setData(getItem(position));
+        ((ViewHolder) holder).setData(getItem(position), position);
     }
 
     @Override
@@ -163,23 +164,51 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param itemHelper 条目帮助类
      * @param t          对应数据
      * @param layout     条目对应的布局，多布局的时候使用
+     * @param position   条目索引
      */
-    protected abstract void bindData(ItemHelper itemHelper, T t, @LayoutRes int layout);
+    protected abstract void bindData(ItemHelper itemHelper, T t, int position, @LayoutRes int layout);
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener<T> {
+        /**
+         * 点击条目
+         *
+         * @param t        条目数据
+         * @param position 条目索引
+         */
+        void onItemClick(T t, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private @LayoutRes
         int layoutRes;
         private final ItemHelper mItemHelper;
+        private T mData;
+        private int mPosition;
 
         private ViewHolder(ViewGroup parent, int layout) {
             super(LayoutInflater.from(parent.getContext())
                     .inflate(layout, parent, false));
             layoutRes = layout;
             mItemHelper = new ItemHelper(itemView);
+            itemView.setOnClickListener(this);
         }
 
-        public void setData(T t) {
-            bindData(mItemHelper, t, layoutRes);
+        public void setData(T t, int position) {
+            mData = t;
+            mPosition = position;
+            bindData(mItemHelper, t, position, layoutRes);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(mData, mPosition);
+            }
         }
     }
 
@@ -191,7 +220,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             this.itemView = itemView;
         }
 
-        public View getView() {
+        public View getItemView() {
             return itemView;
         }
 

@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 import cn.leo.fastframe.R;
 import cn.leo.fastframe.adapter.TestRVadapter;
 import cn.leo.fastframe.bean.TestBean;
+import cn.leo.frame.base.AsyncRVAdapter;
 
 public class Main2Activity extends AppCompatActivity {
 
@@ -38,6 +40,14 @@ public class Main2Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mAdapter.removeData(5);
+            }
+        });
+
+        mAdapter.setOnItemClickListener(new AsyncRVAdapter.OnItemClickListener<TestBean>() {
+
+            @Override
+            public void onItemClick(TestBean testBean, int position) {
+                Toast.makeText(Main2Activity.this, testBean.content, Toast.LENGTH_SHORT).show();
             }
         });
     }
