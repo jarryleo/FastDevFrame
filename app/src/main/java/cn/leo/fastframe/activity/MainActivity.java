@@ -41,13 +41,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     public void onGetNewsListSuccess(TestBean bean) {
-
         Intent a = new Intent();
         a.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
     @Override
     public void onClick(View v) {
+        startActivity(new Intent(this, Main2Activity.class));
+    }
+
+    private void test1() {
         PermissionUtil.getInstance(this)
                 .request(PermissionUtil.permission.READ_EXTERNAL_STORAGE,
                         PermissionUtil.permission.CAMERA)

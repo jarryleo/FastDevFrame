@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class BaseRVAdapter<T> extends RecyclerView.Adapter {
     public List<T> mList = new ArrayList<>();
 
+
     public void setData(List<T> list) {
         mList.clear();
         mList.addAll(list);
