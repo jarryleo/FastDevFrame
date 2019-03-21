@@ -45,6 +45,8 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         mDiffer = new AsyncListDiffer<>(this, diffCallback);
     }
 
+    private AsyncDifferConfig<T> mConfig = new AsyncDifferConfig.Builder<T>(diffCallback).build();
+
     /**
      * 异步比对去重，areItemsTheSame相同areContentsTheSame不同的则替换位置
      *
@@ -52,9 +54,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param newList 新列表
      */
     private void asyncAddData(final List<T> oldList, final List<T> newList) {
-        System.out.println("oldSize" + oldList.size());
-        final AsyncDifferConfig<T> config = new AsyncDifferConfig.Builder<T>(diffCallback).build();
-        config.getBackgroundThreadExecutor().execute(new Runnable() {
+        mConfig.getBackgroundThreadExecutor().execute(new Runnable() {
             @Override
             public void run() {
                 boolean change = false;
@@ -70,19 +70,16 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                             oldList.set(i, newItem);
                             change = true;
                             flag = true;
-                            System.out.println("替换第" + i);
                         }
                         break;
                     }
                     if (!flag) {
                         oldList.add(newItem);
                         change = true;
-                        System.out.println("增加1个");
                     }
                 }
                 if (change) {
                     mDiffer.submitList(oldList);
-                    System.out.println("更改列表");
                 }
             }
         });
@@ -133,6 +130,10 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param position 条目索引
      */
     public void removeData(int position) {
+        if (position < 0 ||
+                position >= mDiffer.getCurrentList().size()) {
+            return;
+        }
         List<T> list = getData();
         list.remove(position);
         mDiffer.submitList(list);
