@@ -154,6 +154,13 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
+     * 清空列表
+     */
+    public void removeAll() {
+        mDiffer.submitList(null);
+    }
+
+    /**
      * 获取当前数据集
      *
      * @return 返回一个可修改的数据集，修改数据后通过
