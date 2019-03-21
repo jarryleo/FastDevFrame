@@ -50,8 +50,8 @@ public class Main2Activity extends AppCompatActivity {
         mAdapter.setOnItemClickListener(new AsyncRVAdapter.OnItemClickListener<TestBean>() {
 
             @Override
-            public void onItemClick(TestBean testBean, int position) {
-                Toast.makeText(Main2Activity.this, testBean.content, Toast.LENGTH_SHORT).show();
+            public void onItemClick(TestBean data, int position) {
+                Toast.makeText(Main2Activity.this, data.content, Toast.LENGTH_SHORT).show();
             }
         });
     }

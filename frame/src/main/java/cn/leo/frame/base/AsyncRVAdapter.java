@@ -226,10 +226,10 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     /**
      * 给条目绑定数据
      *
-     * @param itemHelper 条目帮助类
-     * @param t          对应数据
+     * @param helper 条目帮助类
+     * @param data   对应数据
      */
-    protected abstract void bindData(ItemHelper itemHelper, T t);
+    protected abstract void bindData(ItemHelper helper, T data);
 
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -240,10 +240,10 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         /**
          * 点击条目
          *
-         * @param t        条目数据
+         * @param data     条目数据
          * @param position 条目索引
          */
-        void onItemClick(T t, int position);
+        void onItemClick(T data, int position);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -284,7 +284,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         }
 
         public @LayoutRes
-        int getLayoutResId() {
+        int getItemLayout() {
             return layoutResId;
         }
 

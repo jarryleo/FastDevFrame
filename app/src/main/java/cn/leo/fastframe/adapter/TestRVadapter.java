@@ -25,9 +25,8 @@ public class TestRVadapter extends AsyncRVAdapter<TestBean> {
     }
 
     @Override
-    protected void bindData(ItemHelper itemHelper, TestBean testBean) {
-        int resId = itemHelper.getLayoutResId();
-        int position = itemHelper.getPosition();
-        itemHelper.setText(R.id.tv_test, testBean.content);
+    protected void bindData(ItemHelper helper, TestBean data) {
+        helper.setText(R.id.tv_test, data.content);
     }
+
 }
