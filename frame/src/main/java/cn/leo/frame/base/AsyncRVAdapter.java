@@ -3,6 +3,7 @@ package cn.leo.frame.base;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.v7.recyclerview.extensions.AsyncDifferConfig;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +46,61 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     }
 
     /**
+     * 异步比对去重，areItemsTheSame相同areContentsTheSame不同的则替换位置
+     *
+     * @param oldList 原列表
+     * @param newList 新列表
+     */
+    private void asyncAddData(final List<T> oldList, final List<T> newList) {
+        System.out.println("oldSize" + oldList.size());
+        final AsyncDifferConfig<T> config = new AsyncDifferConfig.Builder<T>(diffCallback).build();
+        config.getBackgroundThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                boolean change = false;
+                for (T newItem : newList) {
+                    boolean flag = false;
+                    for (int i = 0; i < oldList.size(); i++) {
+                        T oldItem = oldList.get(i);
+                        if (!diffCallback.areItemsTheSame(oldItem, newItem)) {
+                            continue;
+                        }
+                        flag = diffCallback.areContentsTheSame(oldItem, newItem);
+                        if (!flag) {
+                            oldList.set(i, newItem);
+                            change = true;
+                            flag = true;
+                            System.out.println("替换第" + i);
+                        }
+                        break;
+                    }
+                    if (!flag) {
+                        oldList.add(newItem);
+                        change = true;
+                        System.out.println("增加1个");
+                    }
+                }
+                if (change) {
+                    mDiffer.submitList(oldList);
+                    System.out.println("更改列表");
+                }
+            }
+        });
+    }
+
+    private void asyncAddData(final List<T> data) {
+        final List<T> oldList = getData();
+        asyncAddData(oldList, data);
+    }
+
+    private void asyncAddData(final T data) {
+        final List<T> oldList = getData();
+        List<T> newList = new ArrayList<>();
+        newList.add(data);
+        asyncAddData(oldList, newList);
+    }
+
+    /**
      * 设置新的数据集
      *
      * @param data 数据
@@ -56,12 +112,19 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     /**
      * 新增数据集
      *
-     * @param data 数据
+     * @param data 数据集
      */
     public void addData(List<T> data) {
-        List<T> list = new ArrayList<>(mDiffer.getCurrentList());
-        list.addAll(data);
-        mDiffer.submitList(list);
+        asyncAddData(data);
+    }
+
+    /**
+     * 新增单条数据
+     *
+     * @param data 数据
+     */
+    public void addData(T data) {
+        asyncAddData(data);
     }
 
     /**
@@ -70,7 +133,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param position 条目索引
      */
     public void removeData(int position) {
-        List<T> list = new ArrayList<>(mDiffer.getCurrentList());
+        List<T> list = getData();
         list.remove(position);
         mDiffer.submitList(list);
     }
@@ -84,7 +147,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @see AsyncRVAdapter#areContentsTheSame(Object, Object)
      */
     public void removeData(T t) {
-        List<T> list = new ArrayList<>(mDiffer.getCurrentList());
+        List<T> list = getData();
         list.remove(t);
         mDiffer.submitList(list);
     }
@@ -96,6 +159,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @see AsyncRVAdapter#setData(List)
      * 可以刷新列表
      */
+
     public List<T> getData() {
         return new ArrayList<>(mDiffer.getCurrentList());
     }
@@ -244,6 +308,10 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             V view;
             if (v == null) {
                 view = itemView.findViewById(viewId);
+                if (view == null) {
+                    String entryName = itemView.getResources().getResourceEntryName(viewId);
+                    throw new NullPointerException("id :" + entryName + " can not find in this item!");
+                }
                 viewCache.put(viewId, view);
             } else {
                 view = (V) v;
@@ -281,6 +349,21 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                 String entryName = view.getResources().getResourceEntryName(viewId);
                 throw new ClassCastException("id :" + entryName + " are not ImageView");
             }
+        }
+
+        public void setViewVisble(@IdRes int viewId) {
+            View view = getViewById(viewId);
+            view.setVisibility(View.VISIBLE);
+        }
+
+        public void setViewInvisble(@IdRes int viewId) {
+            View view = getViewById(viewId);
+            view.setVisibility(View.INVISIBLE);
+        }
+
+        public void setViewGone(@IdRes int viewId) {
+            View view = getViewById(viewId);
+            view.setVisibility(View.GONE);
         }
 
     }

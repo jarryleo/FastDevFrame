@@ -39,7 +39,11 @@ public class Main2Activity extends AppCompatActivity {
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.removeData(5);
+                //mAdapter.removeData(5);
+                TestBean data = new TestBean();
+                data.id = 5;
+                data.content = "哈哈哈哈哈";
+                mAdapter.addData(data);
             }
         });
 

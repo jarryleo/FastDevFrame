@@ -26,7 +26,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPresenter = new TestPresenter(this);
-        UIUtil.translucentStatusBar(this);
+        //UIUtil.translucentStatusBar(this);
 
         mVp = findViewById(R.id.vp_test);
 

@@ -16,7 +16,7 @@ public class TestPresenter extends BasePresenter<MainActivity> {
 
     @Override
     protected void lazyInitOnce() {
-        testHttp();
+        //testHttp();
         //ToastUtil.shortToast("空闲加载数据");
     }
 
