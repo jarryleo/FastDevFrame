@@ -3,6 +3,7 @@ package cn.leo.frame.base;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.support.v7.recyclerview.extensions.AsyncDifferConfig;
 import android.support.v7.recyclerview.extensions.AsyncListDiffer;
 import android.support.v7.util.DiffUtil;
@@ -342,6 +343,22 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             View view = getViewById(viewId);
             if (view instanceof TextView) {
                 ((TextView) view).setText(text);
+            } else {
+                String entryName = view.getResources().getResourceEntryName(viewId);
+                throw new ClassCastException("id: R.id." + entryName + " are not TextView");
+            }
+        }
+
+        /**
+         * 给按钮或文本框设置文字
+         *
+         * @param viewId 控件id
+         * @param resId  设置的文字资源
+         */
+        public void setText(@IdRes int viewId, @StringRes int resId) {
+            View view = getViewById(viewId);
+            if (view instanceof TextView) {
+                ((TextView) view).setText(resId);
             } else {
                 String entryName = view.getResources().getResourceEntryName(viewId);
                 throw new ClassCastException("id: R.id." + entryName + " are not TextView");

@@ -36,14 +36,12 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     private void initView() {
+        //mRecyclerView.setItemAnimator(null);
         mBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.removeAll();
-               /* TestBean data = new TestBean();
-                data.id = 5;
-                data.content = "哈哈哈哈哈";
-                mAdapter.addData(data);*/
+                //mAdapter.removeAll();
+                initData();
             }
         });
 
