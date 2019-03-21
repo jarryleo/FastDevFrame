@@ -233,7 +233,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param helper 条目帮助类
      * @param data   对应数据
      */
-    protected abstract void bindData(ItemHelper helper, T data);
+    protected abstract void bindData(ItemHelper helper, final T data);
 
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -276,8 +276,9 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         }
     }
 
-    public class ItemHelper {
+    public class ItemHelper implements View.OnClickListener {
         private SparseArray<View> viewCache = new SparseArray<>();
+        private List<Integer> clickListenerCache = new ArrayList<>();
         private View itemView;
         private @LayoutRes
         int layoutResId;
@@ -315,7 +316,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                 view = itemView.findViewById(viewId);
                 if (view == null) {
                     String entryName = itemView.getResources().getResourceEntryName(viewId);
-                    throw new NullPointerException("id :" + entryName + " can not find in this item!");
+                    throw new NullPointerException("id: R.id." + entryName + " can not find in this item!");
                 }
                 viewCache.put(viewId, view);
             } else {
@@ -336,7 +337,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                 ((TextView) view).setText(text);
             } else {
                 String entryName = view.getResources().getResourceEntryName(viewId);
-                throw new ClassCastException("id :" + entryName + " are not TextView");
+                throw new ClassCastException("id: R.id." + entryName + " are not TextView");
             }
         }
 
@@ -352,7 +353,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                 ((ImageView) view).setImageResource(resId);
             } else {
                 String entryName = view.getResources().getResourceEntryName(viewId);
-                throw new ClassCastException("id :" + entryName + " are not ImageView");
+                throw new ClassCastException("id: R.id." + entryName + " are not ImageView");
             }
         }
 
@@ -382,6 +383,32 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             view.setVisibility(View.GONE);
         }
 
+        /**
+         * 给条目中的view订阅点击事件
+         *
+         * @param viewId 控件id
+         */
+        public void subscribeClick(@IdRes int viewId) {
+            boolean contains = clickListenerCache.contains(viewId);
+            if (!contains) {
+                getViewById(viewId).setOnClickListener(this);
+                clickListenerCache.add(viewId);
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            onClickObserve(v, getItem(mPosition));
+        }
     }
 
+    /**
+     * 子类重写此方法获得条目内部view点击事件
+     *
+     * @param view 被点击的view
+     * @param data 当前条目数据
+     */
+    protected void onClickObserve(View view, T data) {
+
+    }
 }
