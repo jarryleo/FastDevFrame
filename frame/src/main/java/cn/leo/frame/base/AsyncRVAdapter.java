@@ -143,13 +143,13 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * 根据对象移除条目
      * 只需要对象满足下面2个条件即可删除
      *
-     * @param t 条目对象
+     * @param data 条目对象
      * @see AsyncRVAdapter#areItemsTheSame(Object, Object)
      * @see AsyncRVAdapter#areContentsTheSame(Object, Object)
      */
-    public void removeData(T t) {
+    public void removeData(T data) {
         List<T> list = getData();
-        list.remove(t);
+        list.remove(data);
         mDiffer.submitList(list);
     }
 
@@ -262,10 +262,10 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             itemView.setOnClickListener(this);
         }
 
-        public void setData(T t, int position) {
-            mData = t;
+        private void setData(T data, int position) {
+            mData = data;
             mItemHelper.setPosition(position);
-            bindData(mItemHelper, t);
+            bindData(mItemHelper, data);
         }
 
         @Override
@@ -354,6 +354,17 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
                 String entryName = view.getResources().getResourceEntryName(viewId);
                 throw new ClassCastException("id :" + entryName + " are not ImageView");
             }
+        }
+
+        /**
+         * 设置view的背景
+         *
+         * @param viewId 控件id
+         * @param resId  资源id
+         */
+        public void setBackgroundResource(@IdRes int viewId, @DrawableRes int resId) {
+            View view = getViewById(viewId);
+            view.setBackgroundResource(resId);
         }
 
         public void setViewVisble(@IdRes int viewId) {
