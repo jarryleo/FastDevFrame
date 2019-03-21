@@ -182,7 +182,9 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param newItem 新条目
      * @return 是否相同
      */
-    protected abstract boolean areItemsTheSame(T oldItem, T newItem);
+    protected boolean areItemsTheSame(T oldItem, T newItem) {
+        return oldItem.equals(newItem);
+    }
 
     /**
      * 判断内容是不是相同，
@@ -192,7 +194,9 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
      * @param newItem 新条目
      * @return 是否相同
      */
-    protected abstract boolean areContentsTheSame(T oldItem, T newItem);
+    protected boolean areContentsTheSame(T oldItem, T newItem) {
+        return oldItem == newItem;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

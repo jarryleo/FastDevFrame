@@ -9,15 +9,6 @@ import cn.leo.frame.base.AsyncRVAdapter;
  * @date : 2019/3/20 14:44
  */
 public class TestRVadapter extends AsyncRVAdapter<TestBean> {
-    @Override
-    protected boolean areItemsTheSame(TestBean oldItem, TestBean newItem) {
-        return oldItem.id == newItem.id;
-    }
-
-    @Override
-    protected boolean areContentsTheSame(TestBean oldItem, TestBean newItem) {
-        return oldItem.content.equals(newItem.content);
-    }
 
     @Override
     protected int getItemLayout(int position) {
