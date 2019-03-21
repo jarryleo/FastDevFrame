@@ -25,6 +25,7 @@ import java.util.List;
 public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
     private AsyncListDiffer<T> mDiffer;
     private OnItemClickListener mOnItemClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
     private DiffUtil.ItemCallback<T> diffCallback = new DiffUtil.ItemCallback<T>() {
 
         @Override
@@ -258,7 +259,22 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
         void onItemClick(T data, int position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
+        mOnItemLongClickListener = onItemLongClickListener;
+    }
+
+    public interface OnItemLongClickListener<T> {
+        /**
+         * 长按点击条目
+         *
+         * @param data     条目数据
+         * @param position 条目索引
+         */
+        void onItemLongClick(T data, int position);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements
+            View.OnClickListener, View.OnLongClickListener {
         private final ItemHelper mItemHelper;
         private T mData;
 
@@ -268,6 +284,7 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             mItemHelper = new ItemHelper(itemView);
             mItemHelper.setLayoutResId(layout);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         private void setData(T data, int position) {
@@ -281,6 +298,15 @@ public abstract class AsyncRVAdapter<T> extends RecyclerView.Adapter {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(mData, mItemHelper.getPosition());
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (mOnItemLongClickListener != null) {
+                mOnItemLongClickListener.onItemLongClick(mData, mItemHelper.getPosition());
+                return true;
+            }
+            return false;
         }
     }
 

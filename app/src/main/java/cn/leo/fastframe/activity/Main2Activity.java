@@ -52,6 +52,12 @@ public class Main2Activity extends AppCompatActivity {
                 Toast.makeText(Main2Activity.this, data.content, Toast.LENGTH_SHORT).show();
             }
         });
+        mAdapter.setOnItemLongClickListener(new AsyncRVAdapter.OnItemLongClickListener<TestBean>() {
+            @Override
+            public void onItemLongClick(TestBean data, int position) {
+                Toast.makeText(Main2Activity.this, "长按" + data.content, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initData() {
