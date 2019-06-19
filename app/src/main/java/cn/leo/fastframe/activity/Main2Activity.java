@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.leo.fastframe.R;
-import cn.leo.fastframe.adapter.TestRVAdapter;
+import cn.leo.fastframe.adapter.TestRVadapter;
 import cn.leo.fastframe.bean.TestBean;
 import cn.leo.frame.base.AsyncRVAdapter;
 
 public class Main2Activity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private TestRVAdapter mAdapter;
+    private TestRVadapter mAdapter;
     private Button mBtn;
 
     @Override
@@ -29,7 +29,7 @@ public class Main2Activity extends AppCompatActivity {
         mBtn = findViewById(R.id.btnDel);
         mRecyclerView = findViewById(R.id.rvTest);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mAdapter = new TestRVAdapter();
+        mAdapter = new TestRVadapter();
         mRecyclerView.setAdapter(mAdapter);
         initView();
         initData();
